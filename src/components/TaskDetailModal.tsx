@@ -5,12 +5,12 @@ import type { KanbanTask } from "./KanbanTypes";
 import type { Column } from "./kanbanSampleData";
 
 interface TaskDetailModalProps {
-  task: KanbanTask; // The currently selected task
-  columns: Column[]; // For status/column reassignment
-  onClose: () => void; // Close modal handler
-  onSave: (updatedTask: KanbanTask) => void; // Save task handler
-  onDelete: (taskId: string) => void; // Delete task handler
-  darkMode?: boolean; // Optional dark mode support
+  task: KanbanTask;
+  columns: Column[];
+  onClose: () => void;
+  onSave: (updatedTask: KanbanTask) => void;
+  onDelete: (taskId: string) => void;
+  darkMode?: boolean;
 }
 
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -21,39 +21,37 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onDelete,
   darkMode = false,
 }) => {
-  // ------------------------
-  // Local editable state
-  // ------------------------
+  // Editable state and tagInput
   const [editableTask, setEditableTask] = useState<KanbanTask>({ ...task });
+  const [tagInput, setTagInput] = useState((task.tags || []).join(", "));
 
-  // Update local state if the parent updates the task reference
   useEffect(() => {
     setEditableTask({ ...task });
+    setTagInput((task.tags || []).join(", "));
   }, [task]);
 
-  // ------------------------
-  // Controlled field handlers
-  // ------------------------
+  // General field change
   const handleChange = (field: keyof KanbanTask, value: any) => {
     setEditableTask((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ------------------------
-  // Handle Save
-  // Updates timestamp and passes updated task to parent
-  // ------------------------
+  // Save handler including tags parsing
   const handleSave = () => {
+    const tags = tagInput
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
     const updatedTask = {
       ...editableTask,
-      updatedAt: new Date().toISOString(), // Track last update time
+      tags,
+      updatedAt: new Date().toISOString(),
     };
     onSave(updatedTask);
     onClose();
   };
 
-  // ------------------------
-  // Handle Delete (with confirmation)
-  // ------------------------
+  // Delete handler
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this task?")) {
       onDelete(task.id);
@@ -76,12 +74,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()} // Prevent backdrop click
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
             <h2 className="kanban-modal-title">Task Details</h2>
-
-            {/* Form Fields */}
             <div className="kanban-modal-fields">
               {/* Title */}
               <div className="kanban-field-label">
@@ -93,7 +88,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   onChange={(e) => handleChange("title", e.target.value)}
                 />
               </div>
-
               {/* Description */}
               <div className="kanban-field-label">
                 <label>Description</label>
@@ -104,7 +98,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   onChange={(e) => handleChange("description", e.target.value)}
                 />
               </div>
-
               {/* Assignee */}
               <div className="kanban-field-label">
                 <label>Assignee</label>
@@ -115,26 +108,25 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   onChange={(e) => handleChange("assignee", e.target.value)}
                 />
               </div>
-
               {/* Tags */}
               <div className="kanban-field-label">
                 <label>Tags (comma separated)</label>
                 <input
                   type="text"
                   className="kanban-modal-input"
-                  value={(editableTask.tags || []).join(", ")}
-                  onChange={(e) =>
-                    handleChange(
-                      "tags",
-                      e.target.value
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onBlur={() =>
+                    setEditableTask((prev) => ({
+                      ...prev,
+                      tags: tagInput
                         .split(",")
                         .map((t) => t.trim())
-                        .filter(Boolean)
-                    )
+                        .filter(Boolean),
+                    }))
                   }
                 />
               </div>
-
               {/* Priority */}
               <div className="kanban-field-label">
                 <label>Priority</label>
@@ -154,8 +146,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   <option value="urgent">Urgent</option>
                 </select>
               </div>
-
-              {/* Status (Column Reassignment) */}
+              {/* Status */}
               <div className="kanban-field-label">
                 <label>Status</label>
                 <select
@@ -170,7 +161,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   ))}
                 </select>
               </div>
-
               {/* Due Date */}
               <div className="kanban-field-label">
                 <label>Due Date</label>
@@ -178,15 +168,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   type="date"
                   className="kanban-modal-input"
                   value={
-                    editableTask.dueDate
-                      ? editableTask.dueDate.slice(0, 10)
-                      : ""
+                    editableTask.dueDate ? editableTask.dueDate.slice(0, 10) : ""
                   }
                   onChange={(e) => handleChange("dueDate", e.target.value)}
                 />
               </div>
             </div>
-
             {/* Last Updated Timestamp */}
             {editableTask.updatedAt && (
               <p
@@ -201,7 +188,6 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 {new Date(editableTask.updatedAt).toLocaleString()}
               </p>
             )}
-
             {/* Action Buttons */}
             <div className="kanban-modal-actions">
               <button
