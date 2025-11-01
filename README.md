@@ -8,6 +8,9 @@ A modern, customizable **Kanban Board** built using **React**, **TypeScript**, a
 ## 🚀 Live Storybook
 [https://raginee4321.github.io/kanban-component-raginee](https://raginee4321.github.io/kanban-component-raginee)
 
+##Live Project link
+https://kanbanboardraginee.netlify.app/
+
 ---
 
 ## ⚙️ Installation
