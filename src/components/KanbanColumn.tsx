@@ -5,6 +5,8 @@ import type { Column } from "./kanbanSampleData";
 import type { KanbanTask } from "./KanbanTypes";
 import KanbanCard from "./KanbanCard";
 
+const PREDEFINED_COLUMNS = ["to do", "in progress", "done", "review"];
+
 interface KanbanColumnProps {
   column: Column;
   tasks: Record<string, KanbanTask>;
@@ -18,8 +20,8 @@ interface KanbanColumnProps {
   wipCount: number;
   wipLimit: number | string;
   onEditTask: (taskId: string) => void;
-  onDeleteColumn: (colId: string) => void;  // New delete column prop
-  onEditColumn: (colId: string, currentTitle: string) => void; // New edit column prop
+  onDeleteColumn: (colId: string) => void;
+  onEditColumn: (colId: string, currentTitle: string) => void;
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -53,6 +55,8 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     }
   };
 
+  const isPredefined = PREDEFINED_COLUMNS.includes(column.title.toLowerCase());
+
   return (
     <motion.div
       layout
@@ -66,19 +70,20 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     >
       <div className="kanban-column-header">
         <span>{column.title}</span>
-        <div style={{ display: "flex", gap: "0.6rem" }}>
-          <Edit
-            size={18}
-            className="text-indigo-500 cursor-pointer"
-            onClick={() => onEditColumn(column.id, column.title)}
-          />
-          <Trash2
-            size={18}
-            className="text-red-600 cursor-pointer"
-           
-            onClick={() => onDeleteColumn(column.id)}
-          />
-        </div>
+        {!isPredefined && (
+          <div style={{ display: "flex", gap: "0.6rem" }}>
+            <Edit
+              size={18}
+              className="text-indigo-500 cursor-pointer"
+              onClick={() => onEditColumn(column.id, column.title)}
+            />
+            <Trash2
+              size={18}
+              className="text-red-600 cursor-pointer"
+              onClick={() => onDeleteColumn(column.id)}
+            />
+          </div>
+        )}
       </div>
       <div
         className="kanban-wip"

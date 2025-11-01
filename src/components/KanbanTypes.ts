@@ -1,3 +1,5 @@
+// kanbanTypes.ts
+
 export interface KanbanTask {
   id: string;
   title: string;
@@ -8,7 +10,13 @@ export interface KanbanTask {
   tags?: string[];
   createdAt: string;
   dueDate?: string;
+  
+  // Tracks the last time task was edited
+  updatedAt?: string;
+}
 
-  // Add this line
-  updatedAt?: string; // Tracks the last time task was edited
+export interface Column {
+  id: string;
+  title: string;
+  tasks: KanbanTask[];
 }

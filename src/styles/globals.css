@@ -2,6 +2,7 @@ body {
   background: #181629;
   margin: 0;
   font-family: 'Inter', Arial, sans-serif;
+  overflow-x: auto; /* Allow horizontal scroll if needed */
 }
 
 /* Main container */
@@ -12,7 +13,8 @@ body {
   align-items: center;
   justify-content: flex-start;
   padding: 1.5rem;
-  overflow-x: hidden;
+  /* Change overflow-x hidden to auto for horizontal scroll */
+  overflow-x: auto;
 }
 
 /* ===== HEADER AREA ===== */
@@ -139,7 +141,7 @@ body.dark .kanban-mode-btn:hover {
 
 /* ===== COLUMN ===== */
 .kanban-column {
-  width: 90%;
+  width: 100%; /* Changed from 90% to 100% for consistent grid sizing */
   border-radius: 1.1rem;
   box-shadow: 0 6px 22px 0 rgba(54, 61, 108, 0.12);
   padding: 1rem;
@@ -451,6 +453,7 @@ body.dark .kanban-modal-btn-cancel {
   justify-content: center;
   padding: 1rem;
 }
+
 /* Priority tags styling for both light and dark mode */
 .kanban-priority {
   font-size: 0.95rem;
